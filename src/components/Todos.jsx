@@ -7,14 +7,17 @@ function Todos() {
   function handleSubmit(e) {
     e.preventDefault();
     const trimmed = text.trim();
+
     if (trimmed === "") {
       return;
     }
+
     const newTodo = {
       id: crypto.randomUUID(),
       text: trimmed,
       completed: false,
     };
+
     setTodos([...todos, newTodo]);
     setText("");
   }
@@ -35,11 +38,27 @@ function Todos() {
     setTodos(todos.filter((todo) => !todo.completed));
   }
 
+  function handleToggleAll() {
+    const unfinishedCount = todos.filter((todo) => !todo.completed).length;
+    const shouldCompleteAll = unfinishedCount !== 0;
+
+    setTodos(
+      todos.map((todo) => ({
+        ...todo,
+        completed: shouldCompleteAll,
+      })),
+    );
+  }
+
+  const unfinishedCount = todos.filter((todo) => !todo.completed).length;
+  const allCompleted = unfinishedCount === 0;
+
   return (
     <section className="mx-auto max-w-[550px]">
       <h1 className="text-center text-[80px] font-extralight text-[#b83f45]">
         todos
       </h1>
+
       <div className="relative bg-white shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]">
         <form onSubmit={handleSubmit}>
           <input
@@ -49,10 +68,18 @@ function Todos() {
             placeholder="What needs to be done?"
           />
         </form>
+
         {todos.length > 0 && (
           <>
             <main className="relative border-t border-[#e6e6e6]">
-              <input id="toggle-all" type="checkbox" className="peer sr-only" />
+              <input
+                id="toggle-all"
+                type="checkbox"
+                checked={allCompleted}
+                onChange={handleToggleAll}
+                className="peer sr-only"
+              />
+
               <label
                 htmlFor="toggle-all"
                 className="absolute -top-[66px] left-0 flex h-[65px] w-[60px] cursor-pointer items-center justify-center text-[22px] text-[#949494] peer-checked:text-[#484848]"
@@ -72,6 +99,7 @@ function Todos() {
                       onChange={() => handleToggle(todo.id)}
                       className="ml-[15px] size-[30px] shrink-0 cursor-pointer accent-[#59a193]"
                     />
+
                     <span
                       className={
                         todo.completed
@@ -81,6 +109,7 @@ function Todos() {
                     >
                       {todo.text}
                     </span>
+
                     <button
                       type="button"
                       onClick={() => handleDelete(todo.id)}
@@ -95,13 +124,8 @@ function Todos() {
 
             <footer className="grid h-10 grid-cols-3 items-center border-t border-[#e6e6e6] px-[15px] text-[15px]">
               <span>
-                <strong className="font-light">
-                  {todos.filter((todo) => !todo.completed).length}
-                </strong>{" "}
-                {todos.filter((todo) => !todo.completed).length === 1
-                  ? "item"
-                  : "items"}{" "}
-                left
+                <strong className="font-light">{unfinishedCount}</strong>{" "}
+                {unfinishedCount === 1 ? "item" : "items"} left
               </span>
 
               <ul className="flex justify-center gap-1">
@@ -113,6 +137,7 @@ function Todos() {
                     All
                   </button>
                 </li>
+
                 <li>
                   <button
                     type="button"
@@ -121,6 +146,7 @@ function Todos() {
                     Active
                   </button>
                 </li>
+
                 <li>
                   <button
                     type="button"
@@ -130,13 +156,16 @@ function Todos() {
                   </button>
                 </li>
               </ul>
-              <button
-                type="button"
-                onClick={handleClearCompleted}
-                className="cursor-pointer justify-self-end hover:underline"
-              >
-                Clear completed
-              </button>
+
+              {todos.some((todo) => todo.completed) && (
+                <button
+                  type="button"
+                  onClick={handleClearCompleted}
+                  className="cursor-pointer justify-self-end hover:underline"
+                >
+                  Clear completed
+                </button>
+              )}
             </footer>
           </>
         )}
