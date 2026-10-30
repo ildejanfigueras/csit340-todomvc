@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 
 function Todos() {
   const [text, setText] = useState("");
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState("All");
+  const [priority, setPriority] = useState("Medium");
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -17,10 +19,12 @@ function Todos() {
       id: crypto.randomUUID(),
       text: trimmed,
       completed: false,
+      priority: priority,
     };
 
     setTodos([...todos, newTodo]);
     setText("");
+    setPriority("Medium");
   }
 
   function handleToggle(id) {
@@ -86,6 +90,30 @@ function Todos() {
             className="h-[65px] w-full py-4 pr-4 pl-[60px] text-2xl shadow-[inset_0_-2px_1px_rgba(0,0,0,0.03)] outline-none placeholder:text-black/40 placeholder:italic focus:shadow-[0_0_2px_2px_#cf7d7d]"
             placeholder="What needs to be done?"
           />
+
+          <div className="flex items-center justify-end gap-2 border-t border-[#e6e6e6] px-4 py-2">
+            <label htmlFor="priority" className="text-sm text-[#777]">
+              Priority:
+            </label>
+
+            <select
+              id="priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className="cursor-pointer rounded border border-[#e6e6e6] px-2 py-1 text-sm outline-none"
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+
+            <button
+              type="submit"
+              className="rounded bg-[#b83f45] px-3 py-1 text-sm text-white hover:bg-[#963238]"
+            >
+              Add
+            </button>
+          </div>
         </form>
 
         {todos.length > 0 && (
@@ -127,6 +155,18 @@ function Todos() {
                       }
                     >
                       {todo.text}
+                    </span>
+
+                    <span
+                      className={`mr-3 shrink-0 rounded px-2 py-1 text-xs font-medium ${
+                        todo.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : todo.priority === "Medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {todo.priority}
                     </span>
 
                     <button
